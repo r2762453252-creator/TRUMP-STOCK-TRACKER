@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trump Stock Radar</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">TARGETED MARKET MONITOR</div>
+      <h1>Trump Stock Radar</h1>
+    </div>
+
+    <div class="status">
+      <span class="dot"></span>
+      <span id="marketStatus">Market data ready</span>
+    </div>
+  </header>
+
+  <section class="controls">
+    <div class="tabs">
+      <button class="tab active" data-filter="all">全部</button>
+      <button class="tab" data-filter="holding">公开持股</button>
+      <button class="tab" data-filter="positive">公开看好</button>
+    </div>
+
+    <div class="range">
+      <span>事件窗口</span>
+      <select id="daysSelect">
+        <option value="7">最近 7 天</option>
+        <option value="30" selected>最近 30 天</option>
+        <option value="90">最近 90 天</option>
+      </select>
+    </div>
+  </section>
+
+  <main>
+    <section class="hero">
+      <div>
+        <div class="kicker">LIVE SIGNAL MAP</div>
+        <h2>Trump 相关股票<br>实时气泡雷达</h2>
+      </div>
+
+      <div class="legend">
+        <span><i class="legend-dot holding"></i>公开持股</span>
+        <span><i class="legend-dot positive"></i>公开看好 / 正面点名</span>
+      </div>
+    </section>
+
+    <section id="bubbleField" class="bubble-field" aria-label="stock bubbles"></section>
+
+    <section class="lower-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="kicker">SIGNALS</div>
+            <h3>最近事件</h3>
+          </div>
+          <span id="signalCount" class="pill"></span>
+        </div>
+
+        <div id="signalList" class="signal-list"></div>
+      </div>
+
+      <div class="panel mini-panel">
+        <div class="kicker">HOW TO USE</div>
+        <h3>点击任意气泡</h3>
+        <p>右侧会滑出完整股票行情面板，并显示 Trump 相关事件、来源和持股信息。</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- backdrop -->
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+
+  <!-- stock detail drawer -->
+  <aside id="stockDrawer" class="stock-drawer hidden" aria-hidden="true">
+    <div class="drawer-inner">
+
+      <div class="drawer-header">
+        <div>
+          <div id="drawerTicker" class="drawer-ticker">DJT</div>
+          <div id="drawerCompany" class="drawer-company">Trump Media & Technology Group</div>
+        </div>
+
+        <button id="closeDrawer" class="close-btn" aria-label="Close">×</button>
+      </div>
+
+      <div class="quote-block">
+        <div class="quote-main">
+          <div id="drawerPrice" class="drawer-price">--</div>
+          <div class="currency">USD</div>
+        </div>
+
+        <div id="drawerChange" class="drawer-change">--</div>
+
+        <div class="quote-sub">
+          <span id="quoteUpdated">更新中...</span>
+          <span id="quoteStatus">DEMO QUOTE</span>
+        </div>
+      </div>
+
+      <div class="chart-range-tabs">
+        <button class="range-tab active" data-range="1D">1天</button>
+        <button class="range-tab" data-range="5D">5天</button>
+        <button class="range-tab" data-range="1M">1个月</button>
+        <button class="range-tab" data-range="6M">6个月</button>
+        <button class="range-tab" data-range="YTD">YTD</button>
+        <button class="range-tab" data-range="1Y">1年</button>
+        <button class="range-tab" data-range="5Y">5年</button>
+        <button class="range-tab" data-range="MAX">最大</button>
+      </div>
+
+      <div class="chart-shell">
+        <div id="chartLoading" class="chart-loading hidden">Loading chart...</div>
+        <canvas id="stockChart"></canvas>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <span>开盘</span>
+          <b id="statOpen">--</b>
+        </div>
+
+        <div class="stat">
+          <span>市值</span>
+          <b id="statMarketCap">--</b>
+        </div>
+
+        <div class="stat">
+          <span>最高</span>
+          <b id="statHigh">--</b>
+        </div>
+
+        <div class="stat">
+          <span>市盈率</span>
+          <b id="statPE">--</b>
+        </div>
+
+        <div class="stat">
+          <span>最低</span>
+          <b id="statLow">--</b>
+        </div>
+
+        <div class="stat">
+          <span>股息率</span>
+          <b id="statDividendYield">--</b>
+        </div>
+
+        <div class="stat">
+          <span>52周高点</span>
+          <b id="stat52High">--</b>
+        </div>
+
+        <div class="stat">
+          <span>52周低点</span>
+          <b id="stat52Low">--</b>
+        </div>
+      </div>
+
+      <div class="trump-card">
+        <div class="section-title-row">
+          <div>
+            <div class="kicker">TRUMP SIGNAL</div>
+            <h3>Trump 相关信息</h3>
+          </div>
+          <span id="trumpTypeBadge" class="type-badge">--</span>
+        </div>
+
+        <div id="trumpInfo"></div>
+      </div>
+    </div>
+  </aside>
+
+  <footer>
+    <span>公开表态 ≠ 实际持仓。所有信号应保留来源与时间戳。</span>
+    <span id="updatedAt"></span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./config.js"></script>
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
